@@ -18,9 +18,18 @@ NEWUSER="$2"
 STATICIP="$3"
 ROUTERIP="$4"
 
+# note that this will send requests to google/cloudflare - if that's unacceptable you'll need
+# to change these values to use different DNS servers
+DNSSERVERS="8.8.8.8 8.8.4.4 1.1.1.1"
+
 # force a new password for "pi"
 echo "changing password for user 'pi'"
 passwd pi
+
+# servers always want UTC, and we'll want to use NTP
+
+timedatectl set-timezone UTC
+timedatectl set-ntp true
 
 # disabling automatic updates obviously has security implications, so it's not done by default here
 
@@ -114,12 +123,13 @@ EOF
 chown $NEWUSER:$NEWUSER /home/$NEWUSER/newuser.sh
 chmod +x /home/$NEWUSER/newuser.sh
 
-# When booted, request a static IP
+# When booted, request a static IP from the router provided
 cat << EOF >> /etc/dhcpcd.conf
 
 interface eth0
 static ip_address=$STATICIP
 static routers=$ROUTERIP
+static domain_name_servers=$DNSSERVERS
 EOF
 
 systemctl enable ssh
