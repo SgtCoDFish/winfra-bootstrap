@@ -118,6 +118,7 @@ if [[ \$EUID -ne 0 ]]; then
 fi
 
 deluser --remove-home pi
+raspi-config --expand-rootfs
 EOF
 
 chown $NEWUSER:$NEWUSER /home/$NEWUSER/newuser.sh
