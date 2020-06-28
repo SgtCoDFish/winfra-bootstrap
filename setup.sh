@@ -21,6 +21,7 @@ ROUTERIP="$4"
 # note that this will send requests to google/cloudflare - if that's unacceptable you'll need
 # to change these values to use different DNS servers
 DNSSERVERS="8.8.8.8 8.8.4.4 1.1.1.1"
+SSHPORT="5541"
 
 # force a new password for "pi"
 echo "changing password for user 'pi'"
@@ -65,11 +66,11 @@ echo "$NEWUSER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/100-$NEWUSER-nopasswd
 
 hostname $NEWHOSTNAME
 echo $NEWHOSTNAME > /etc/hostname
-sed -i "s/raspberrypi/$NEWHOSTNAME" /etc/hosts
+sed -i "s/raspberrypi/$NEWHOSTNAME/" /etc/hosts
 
 cat << EOF > /etc/ssh/sshd_config
 # Different port by default to stop naive attacks
-Port 5441
+Port $SSHPORT
 
 # HostKeys in order of preference
 HostKey /etc/ssh/ssh_host_ed25519_key
