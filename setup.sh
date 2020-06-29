@@ -27,32 +27,8 @@ SSHPORT="5541"
 echo "changing password for user 'pi'"
 passwd pi
 
-# servers always want UTC, and we'll want to use NTP
-
-timedatectl set-timezone UTC
-timedatectl set-ntp true
-
-# disabling automatic updates obviously has security implications, so it's not done by default here
-
-# systemctl stop apt-daily.timer
-# systemctl stop apt-daily.service
-# systemctl disable apt-daily.timer
-# systemctl disable apt-daily.service
-
-# we don't need wpa_supplicant on a wired Pi
-systemctl stop wpa_supplicant
-systemctl disable wpa_supplicant
-
-# triggerhappy isn't useful on a headless system
-systemctl stop triggerhappy.socket
-systemctl stop triggerhappy.service
-systemctl disable triggerhappy.socket
-systemctl disable triggerhappy.service
-
-apt-get remove -y --purge triggerhappy
-
 # create our new user
-
+echo "creating new user '$NEWUSER'"
 adduser --gecos "" $NEWUSER
 mkdir -p /home/$NEWUSER/.ssh
 chown -R $NEWUSER:$NEWUSER /home/$NEWUSER/.ssh
@@ -61,6 +37,18 @@ cp /etc/winfra-bootstrap/authorized_keys /home/$NEWUSER/.ssh/authorized_keys
 # allow the new user to use sudo without entering a password
 
 echo "$NEWUSER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/100-$NEWUSER-nopasswd
+
+
+# servers always want UTC, and we'll want to use NTP
+
+timedatectl set-timezone UTC
+timedatectl set-ntp true
+
+# disabling automatic updates obviously has security implications, so it's not done by default here
+
+# systemctl disable apt-daily.timer
+# systemctl disable apt-daily-upgrade.timer
+# systemctl disable apt-daily.service
 
 # change the hostname
 
