@@ -113,6 +113,24 @@ EOF
 chown $NEWUSER:$NEWUSER /home/$NEWUSER/newuser.sh
 chmod +x /home/$NEWUSER/newuser.sh
 
+
+cat << EOF > /etc/systemd/system/rpi_no_hdmi.service
+[Unit]
+Description=Disable Raspberry Pi HDMI port
+
+[Service]
+Type=oneshot
+ExecStart=/opt/vc/bin/tvservice -o
+ExecStop=/opt/vc/bin/tvservice -p
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl daemon-reload
+systemctl enable rpi_no_hdmi.service
+
 # When booted, request a static IP from the router provided
 cat << EOF >> /etc/dhcpcd.conf
 
